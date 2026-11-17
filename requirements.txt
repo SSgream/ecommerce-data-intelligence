@@ -1,0 +1,22 @@
+
+# Data ingestion
+kaggle
+pandas
+numpy
+python-dotenv
+
+# Database
+sqlalchemy
+psycopg[binary]
+
+# Data analysis and visualization
+jupyter
+matplotlib
+seaborn
+
+# Machine learning
+scikit-learn
+xgboost
+
+# Testing
+pytest
