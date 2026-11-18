@@ -1,0 +1,3 @@
+
+# dbt PostgreSQL adapter
+dbt-postgres

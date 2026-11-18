@@ -1,0 +1,78 @@
+
+version: 2
+
+models:
+  - name: stg_sales_forecast
+    description: "Staging model for sales forecast data"
+    columns:
+      - name: id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: predicted_sales
+        data_tests:
+          - not_null
+
+      - name: store_nbr
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_stores')
+                field: store_nbr
+
+      - name: family_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_families')
+                field: family_id
+
+      - name: date
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_dates')
+                field: date
+
+  - name: stg_stores
+    columns:
+      - name: store_nbr
+        data_tests:
+          - not_null
+          - unique
+
+  - name: stg_dates
+    columns:
+      - name: date
+        data_tests:
+          - not_null
+          - unique
+
+  - name: stg_families
+    columns:
+      - name: family_id
+        data_tests:
+          - not_null
+          - unique
+
+  - name: mart_sales_by_store
+    columns:
+      - name: store_nbr
+        data_tests:
+          - not_null
+          - unique
+
+  - name: mart_sales_by_family
+    columns:
+      - name: family_id
+        data_tests:
+          - not_null
+          - unique
+
+  - name: mart_daily_sales
+    columns:
+      - name: date
+        data_tests:
+          - not_null
+          - unique

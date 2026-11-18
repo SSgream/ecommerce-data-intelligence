@@ -1,0 +1,13 @@
+
+version: 2
+
+sources:
+  - name: ecommerce_dw
+    schema: public
+    description: "Source tables from the E-Commerce Data Warehouse"
+
+    tables:
+      - name: fact_sales_forecast
+      - name: dim_store
+      - name: dim_date
+      - name: dim_family

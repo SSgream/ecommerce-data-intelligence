@@ -1,27 +1,22 @@
+# Environment variables
+.env
+.env.*
+!.env.example
 
-# Python
-__pycache__/
-*.py[cod]
+# Python environments
 .venv/
 venv/
+airflow_env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # Jupyter
 .ipynb_checkpoints/
-
-# Environment variables
-.env
-
-# Data files
-data/raw/*
-data/staging/*
-data/processed/*
-!data/raw/.gitkeep
-!data/staging/.gitkeep
-!data/processed/.gitkeep
-
-# Model artifacts
-*.pkl
-*.joblib
 
 # IDE
 .vscode/
@@ -30,3 +25,29 @@ data/processed/*
 # OS
 .DS_Store
 Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Data files
+data/raw/*
+!data/raw/.gitkeep
+
+data/staging/*
+!data/staging/.gitkeep
+
+data/processed/*
+!data/processed/.gitkeep
+
+# Spark checkpoints
+data/checkpoints/
+
+# Machine learning artifacts
+*.pkl
+*.joblib
+
+# dbt generated files
+ecommerce_analytics/target/
+ecommerce_analytics/dbt_packages/
+ecommerce_analytics/logs/
