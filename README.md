@@ -105,6 +105,19 @@ Power BI is used to visualize the analytical data produced by the PostgreSQL dat
 
 The dashboard connects directly to PostgreSQL and uses the three dbt analytical data marts.
 
+## Power BI Dashboard Preview
+
+### Sales Overview
+![Sales Overview](powerbi/sales_overview.png)
+
+### Store Analysis
+![Store Analysis](powerbi/store_analysis.png)
+
+### Product Analysis
+![Product Analysis](powerbi/product_analysis.png)
+
+For more details, see [Power BI Documentation](powerbi/README.md).
+
 ### Dashboard Views
 
 | Dashboard | Description |
