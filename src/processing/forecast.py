@@ -326,6 +326,38 @@ test_forecast.to_csv(
     index=False
 )
 
+# =========================================================
+# VERIFY SAVED FORECAST
+# =========================================================
+
+if not OUTPUT_PATH.exists():
+    raise FileNotFoundError(
+        f"Forecast output was not created: {OUTPUT_PATH}"
+    )
+
+if OUTPUT_PATH.stat().st_size == 0:
+    raise ValueError("Forecast output file is empty.")
+
+saved_forecast = pd.read_csv(OUTPUT_PATH)
+
+if len(saved_forecast) != len(test_fe):
+    raise ValueError(
+        "Saved forecast record count does not match test data."
+    )
+
+if saved_forecast.isna().sum().sum() > 0:
+    raise ValueError(
+        "Saved forecast contains missing values."
+    )
+
+print("\nSAVED FORECAST VERIFICATION")
+print("=" * 40)
+print("File exists:", OUTPUT_PATH.exists())
+print("File size:", f"{OUTPUT_PATH.stat().st_size:,} bytes")
+print("Saved records:", len(saved_forecast))
+print("Expected records:", len(test_fe))
+print("Saved forecast verification passed.")
+
 print("\nCandidate forecast saved:")
 print(OUTPUT_PATH)
 

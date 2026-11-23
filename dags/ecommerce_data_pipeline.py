@@ -1,7 +1,9 @@
 
 from pathlib import Path
+from datetime import timedelta
 
 import pendulum
+import logging
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
@@ -27,12 +29,42 @@ DBT_EXECUTABLE = (
     "/home/selwin/.venvs/ecommerce-dbt/bin/dbt"
 )
 
+# =========================================================
+# LOGGING & FAILURE HANDLING
+# =========================================================
+
+logger = logging.getLogger("airflow.task")
+
+
+def task_failure_callback(context):
+
+    task_instance = context.get("task_instance")
+    exception = context.get("exception")
+
+    logger.error(
+        "TASK FAILED | dag_id=%s | task_id=%s | run_id=%s | "
+        "try_number=%s | log_url=%s | exception=%s",
+        task_instance.dag_id,
+        task_instance.task_id,
+        task_instance.run_id,
+        task_instance.try_number,
+        task_instance.log_url,
+        exception,
+        exc_info=(
+            type(exception),
+            exception,
+            exception.__traceback__
+        ) if exception else None
+    )
+
+
 
 # =========================================================
 # VALIDATE PROJECT FILES
 # =========================================================
 
 def validate_project_files():
+    logger.info("Starting project files validation...")
 
     required_files = [
         PROJECT_ROOT / ".env",
@@ -53,6 +85,11 @@ def validate_project_files():
 
         DBT_PROJECT / "dbt_project.yml",
     ]
+
+    logger.info(
+        "Checking %s required project files...",
+        len(required_files)
+    )
 
     missing_files = [
         str(file)
@@ -75,7 +112,12 @@ def validate_project_files():
             f"dbt executable not found: {DBT_EXECUTABLE}"
         )
 
-    print("Project files validation successful!")
+    logger.info("Project files validation successful!")
+
+    logger.info(
+        "VALIDATION SUMMARY | total_required_files=%s | status=SUCCESS",
+        len(required_files)
+    )
 
 
 # =========================================================
@@ -148,6 +190,18 @@ fi
 "{DBT_EXECUTABLE}" test
 """
 
+# =========================================================
+# AIRFLOW DEFAULT CONFIGURATION
+# =========================================================
+
+default_args = {
+    "owner": "selwin",
+    "depends_on_past": False,
+    "retries": 2,
+    "retry_delay": timedelta(minutes=2),
+    "on_failure_callback": task_failure_callback,
+}
+
 
 # =========================================================
 # AIRFLOW DAG
@@ -156,6 +210,7 @@ fi
 with DAG(
     dag_id="ecommerce_data_pipeline",
     description="End-to-End E-Commerce Data Intelligence Pipeline",
+    default_args=default_args,
 
     start_date=pendulum.datetime(
         2026, 11, 18, tz="Asia/Makassar"
@@ -181,7 +236,7 @@ with DAG(
         task_id="validate_project_files",
         python_callable=validate_project_files,
     )
-    
+
     ingest_dataset = BashOperator(
         task_id="data_ingestion",
         bash_command=INGEST_DATASET_COMMAND,
