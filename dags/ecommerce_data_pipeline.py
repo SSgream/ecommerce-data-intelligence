@@ -43,6 +43,8 @@ def validate_project_files():
         PROJECT_ROOT / "data/raw/transactions.csv",
         PROJECT_ROOT / "data/raw/oil.csv",
         PROJECT_ROOT / "data/raw/holidays_events.csv",
+        PROJECT_ROOT / "data/raw/store-sales-time-series-forecasting.zip",
+        PROJECT_ROOT / "src/ingestion/ingest_dataset.py",
 
         PROJECT_ROOT / "src/processing/prepare_features.py",
         PROJECT_ROOT / "src/processing/train_forecast.py",
@@ -90,6 +92,9 @@ cd "{PROJECT_ROOT}"
 "{PYTHON_EXECUTABLE}" "{PROJECT_ROOT / script}"
 """
 
+INGEST_DATASET_COMMAND = python_command(
+    "src/ingestion/ingest_dataset.py"
+)
 
 PREPARE_FEATURES_COMMAND = python_command(
     "src/processing/prepare_features.py"
@@ -176,6 +181,11 @@ with DAG(
         task_id="validate_project_files",
         python_callable=validate_project_files,
     )
+    
+    ingest_dataset = BashOperator(
+        task_id="data_ingestion",
+        bash_command=INGEST_DATASET_COMMAND,
+    )
 
     prepare_features = BashOperator(
         task_id="prepare_features",
@@ -217,6 +227,7 @@ with DAG(
     (
         start
         >> validate
+        >> ingest_dataset
         >> prepare_features
         >> train_forecast
         >> generate_forecast
